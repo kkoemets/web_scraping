@@ -1,6 +1,12 @@
 import logging
+import os
+import re
 from enum import Enum
 from typing import NamedTuple
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 import requests
 from bs4 import BeautifulSoup
@@ -34,10 +40,15 @@ class OunaturgParser:
         logging.info(f"Searching for {model.value} prices")
 
         details_urls = list(
-            {url for page_number in range(1, 3) for url in self._get_urls_to_offering_details(model, page_number)})
+            {url for page_number in range(1, int(os.getenv('OUNATURG_PARSER_PAGE_RANGE'))) for url in
+             self._get_urls_to_offering_details(model, page_number)})
         logging.info(f"Found {len(details_urls)} details urls")
 
-        return [self._get_details_from_details_url(url) for url in details_urls]
+        def _to_number(numeric_string: str) -> float:
+            return float(re.sub(r'[^0-9.]', '', numeric_string))
+
+        return sorted([self._get_details_from_details_url(url) for url in details_urls],
+                      key=lambda a: _to_number(a.price))
 
     def _get_urls_to_offering_details(self, model: IPhoneModel, page_number: int) -> list[str]:
         return [self.HOME_URL + element.get("href") for element in (
