@@ -10,7 +10,7 @@ class OunaturgParserTest(unittest.TestCase):
         self.assertTrue(self.parser.find_iphone_prices(IPhoneModel.IPHONE_13_PRO))
 
     def test_get_links_to_offering_details(self):
-        found_links = self.parser._get_urls_to_offering_details(IPhoneModel.IPHONE_13_PRO, 1)
+        found_links = self.parser._get_urls_to_offering_details(1)
         self.assertTrue(found_links)
         for link in found_links:
             self.assertIn('https://www.ounaturg.ee', link)

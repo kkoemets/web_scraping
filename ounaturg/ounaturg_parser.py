@@ -1,15 +1,14 @@
 import logging
-import os
 import re
 from enum import Enum
+from itertools import chain, takewhile, count
 from typing import NamedTuple
-
-from dotenv import load_dotenv
-
-load_dotenv()
 
 import requests
 from bs4 import BeautifulSoup
+from dotenv import load_dotenv
+
+load_dotenv()
 
 logging.basicConfig(
     level=logging.INFO,
@@ -40,9 +39,16 @@ class OunaturgParser:
     def find_iphone_prices(self, model: IPhoneModel) -> list[IPhoneListingDetails]:
         logging.info(f"Searching for {model.value} prices")
 
-        details_urls = list(
-            {url for page_number in range(1, int(os.getenv('OUNATURG_PARSER_PAGE_RANGE'))) for url in
-             self._get_urls_to_offering_details(model, page_number)})
+        def _get_details(page):
+            return self._get_urls_to_offering_details(page)
+
+        def _filter_by_model(url: str) -> bool:
+            return url.endswith(model.value)
+
+        details_urls = list(filter(_filter_by_model,
+                                   list(chain.from_iterable(
+                                       takewhile(bool, (_get_details(page) for page in count(start=1)))))))
+
         logging.info(f"Found {len(details_urls)} details urls")
 
         def _to_number(numeric_string: str) -> float:
@@ -51,13 +57,15 @@ class OunaturgParser:
         return sorted([self._get_details_from_details_url(url) for url in details_urls],
                       key=lambda a: _to_number(a.price))
 
-    def _get_urls_to_offering_details(self, model: IPhoneModel, page_number: int) -> list[str]:
-        def _filter_by_model(url: str) -> bool:
-            return url.endswith(model.value)
+    def _get_urls_to_offering_details(self, page_number: int) -> list[str]:
+        logging.info(f"Getting urls from page {page_number}")
 
-        return list(filter(_filter_by_model, [self.HOME_URL + element.get("href") for element in (
-            self._get_soup(f"{self.IPHONE_SEARCH_URL}?page={page_number}")
-            .find_all(attrs={"itemscope": "itemscope"}))]))
+        soup = self._get_soup(f"{self.IPHONE_SEARCH_URL}?page={page_number}")
+
+        urls = [] if soup.find(class_="next_page disabled") else \
+            [self.HOME_URL + element.get("href") for element in (soup.find_all(attrs={"itemscope": "itemscope"}))]
+        logging.info(f"Found {len(urls)} urls")
+        return urls
 
     def _get_soup(self, url: str) -> BeautifulSoup:
         return BeautifulSoup(self._get_html(url), "html.parser")
