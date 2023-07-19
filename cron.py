@@ -24,5 +24,5 @@ def send_iphone_prices():
     emailer = Emailer()
     parser = OunaturgParser()
     html_creator = HtmlCreator()
-    prices = parser.find_iphone_prices(IPhoneModel.IPHONE_13_PRO)
+    prices = parser.find_iphone_prices(IPhoneModel.IPHONE_13_PRO_MAX)
     emailer.send_email(html_creator.create_html_table([price._asdict() for price in prices]))

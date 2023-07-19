@@ -18,7 +18,8 @@ logging.basicConfig(
 
 
 class IPhoneModel(Enum):
-    IPHONE_13_PRO = 'iPhone%2013%20Pro'
+    IPHONE_13_PRO = 'iphone-13-pro'
+    IPHONE_13_PRO_MAX = 'iphone-13-pro-max'
 
 
 class IPhoneListingDetails(NamedTuple):
@@ -51,16 +52,19 @@ class OunaturgParser:
                       key=lambda a: _to_number(a.price))
 
     def _get_urls_to_offering_details(self, model: IPhoneModel, page_number: int) -> list[str]:
-        return [self.HOME_URL + element.get("href") for element in (
-            self._get_soup(f"{self.IPHONE_SEARCH_URL}/mudel-{model.value}?page={page_number}")
-            .find_all(attrs={"itemscope": "itemscope"}))]
+        def _filter_by_model(url: str) -> bool:
+            return url.endswith(model.value)
+
+        return list(filter(_filter_by_model, [self.HOME_URL + element.get("href") for element in (
+            self._get_soup(f"{self.IPHONE_SEARCH_URL}?page={page_number}")
+            .find_all(attrs={"itemscope": "itemscope"}))]))
+
+    def _get_soup(self, url: str) -> BeautifulSoup:
+        return BeautifulSoup(self._get_html(url), "html.parser")
 
     @staticmethod
     def _get_html(url: str) -> bytes:
         return requests.get(url).content
-
-    def _get_soup(self, url: str) -> BeautifulSoup:
-        return BeautifulSoup(self._get_html(url), "html.parser")
 
     def _get_details_from_details_url(self, url: str) -> IPhoneListingDetails:
         logging.info(f"Getting details from {url}")
