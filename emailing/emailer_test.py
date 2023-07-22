@@ -6,7 +6,7 @@ from emailing.emailer import Emailer
 class EmailerTest(unittest.TestCase):
     emailer = Emailer()
 
-    def test_send_email(self):
+    def test_send_email(self) -> None:
         self.emailer.send_email('<p>hi£</p>')
 
 

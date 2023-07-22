@@ -12,8 +12,8 @@ class Emailer:
     def send_email(content: str) -> None:
         server = smtplib.SMTP('smtp.gmail.com', 587)
         server.starttls()
-        sender_address = os.getenv('EMAILER_SENDER_ADDRESS')
-        server.login(sender_address, os.getenv('EMAILER_SENDER_PASSWORD'))
+        sender_address = os.getenv('EMAILER_SENDER_ADDRESS', '')
+        server.login(sender_address, os.getenv('EMAILER_SENDER_PASSWORD', ''))
         msg = MIMEText(content, 'html', _charset='utf-8').as_string()
-        server.sendmail(sender_address, os.getenv('EMAILER_RECIPIENT_ADDRESS'), msg)
+        server.sendmail(sender_address, os.getenv('EMAILER_RECIPIENT_ADDRESS', ''), msg)
         server.quit()

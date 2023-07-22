@@ -12,8 +12,7 @@ load_dotenv()
 
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
+    format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 class IPhoneModel(Enum):
@@ -33,13 +32,16 @@ class IPhoneListingDetails(NamedTuple):
 
 
 class OunaturgParser:
-    HOME_URL = 'https://www.ounaturg.ee'
-    IPHONE_SEARCH_URL = 'https://www.ounaturg.ee/iphone'
+    __home_url = 'https://www.ounaturg.ee'
+    __iphone_search_url = 'https://www.ounaturg.ee/iphone'
+    _page_threshold = 50
 
     def find_iphone_prices(self, model: IPhoneModel) -> list[IPhoneListingDetails]:
         logging.info(f"Searching for {model.value} prices")
 
-        def _get_details(page):
+        def _get_urls_to_offering_details(page: int) -> list[str]:
+            if page > self._page_threshold:
+                return []
             return self._get_urls_to_offering_details(page)
 
         def _filter_by_model(url: str) -> bool:
@@ -47,7 +49,8 @@ class OunaturgParser:
 
         details_urls = list(filter(_filter_by_model,
                                    list(chain.from_iterable(
-                                       takewhile(bool, (_get_details(page) for page in count(start=1)))))))
+                                       takewhile(bool,
+                                                 (_get_urls_to_offering_details(page) for page in count(start=1)))))))
 
         logging.info(f"Found {len(details_urls)} details urls")
 
@@ -60,10 +63,10 @@ class OunaturgParser:
     def _get_urls_to_offering_details(self, page_number: int) -> list[str]:
         logging.info(f"Getting urls from page {page_number}")
 
-        soup = self._get_soup(f"{self.IPHONE_SEARCH_URL}?page={page_number}")
+        soup = self._get_soup(f"{self.__iphone_search_url}?page={page_number}")
 
         urls = [] if soup.find(class_="next_page disabled") else \
-            [self.HOME_URL + element.get("href") for element in (soup.find_all(attrs={"itemscope": "itemscope"}))]
+            [self.__home_url + element.get("href") for element in (soup.find_all(attrs={"itemscope": "itemscope"}))]
         logging.info(f"Found {len(urls)} urls")
         return urls
 
@@ -100,5 +103,4 @@ class OunaturgParser:
             color=_find_detail_value("Värv"),
             condition=_find_detail_value("Seisukord"),
             location=_find_detail_value("Asukoht"),
-            href=url
-        )
+            href=url)

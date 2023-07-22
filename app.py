@@ -8,7 +8,7 @@ setup_cron(app)
 
 
 @app.route('/monitoring/health')
-def check_health():
+def check_health() -> str:
     return 'OK'
 
 
