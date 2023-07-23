@@ -9,7 +9,7 @@ class HtmlCreatorTest(unittest.TestCase):
     def test_create_html(self) -> None:
         self.assertEqual(self.creator.create_html_table([
             dict(
-                price='1000$',
+                price=1000.0,
                 description='description',
                 model='model',
                 memory='memory',
@@ -18,7 +18,7 @@ class HtmlCreatorTest(unittest.TestCase):
                 location='location',
                 href='href'),
             dict(
-                price='1100$',
+                price=1100.0,
                 description='description',
                 model='model',
                 memory='memory',
@@ -50,6 +50,6 @@ class HtmlCreatorTest(unittest.TestCase):
             </tr>
           </thead>
           <tbody>
-            <tr><td>1000$</td><td>description</td><td>model</td><td>memory</td><td>color</td><td>condition</td><td>location</td><td>href</td></tr><tr><td>1100$</td><td>description</td><td>model</td><td>memory</td><td>color</td><td>condition</td><td>location</td><td>href</td></tr>
+            <tr><td>1000.0</td><td>description</td><td>model</td><td>memory</td><td>color</td><td>condition</td><td>location</td><td>href</td></tr><tr><td>1100.0</td><td>description</td><td>model</td><td>memory</td><td>color</td><td>condition</td><td>location</td><td>href</td></tr>
           </tbody>
         </table>""")

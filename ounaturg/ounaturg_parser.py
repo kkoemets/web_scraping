@@ -6,9 +6,6 @@ from typing import NamedTuple
 
 import requests
 from bs4 import BeautifulSoup
-from dotenv import load_dotenv
-
-load_dotenv()
 
 logging.basicConfig(
     level=logging.INFO,
@@ -21,7 +18,7 @@ class IPhoneModel(Enum):
 
 
 class IPhoneListingDetails(NamedTuple):
-    price: str
+    price: float
     description: str
     model: str
     memory: str
@@ -54,11 +51,8 @@ class OunaturgParser:
 
         logging.info(f"Found {len(details_urls)} details urls")
 
-        def _to_number(numeric_string: str) -> float:
-            return float(re.sub(r'[^0-9.]', '', numeric_string))
-
         return sorted([self._get_details_from_details_url(url) for url in details_urls],
-                      key=lambda a: _to_number(a.price))
+                      key=lambda a: a.price)
 
     def _get_urls_to_offering_details(self, page_number: int) -> list[str]:
         logging.info(f"Getting urls from page {page_number}")
@@ -81,22 +75,22 @@ class OunaturgParser:
         logging.info(f"Getting details from {url}")
         soup = self._get_soup(url)
 
-        find = soup.find(class_="listing-details").find_all("li")
-
-        details_collector = []
-        for elements in find:
-            elements = elements.find_all("span")
-            details_collector.append({"proparty_name": elements[0].text, "proparty_value": elements[1].text})
+        found_details = [
+            {"proparty_name": elements.find_all("span")[0].text, "proparty_value": elements.find_all("span")[1].text}
+            for elements in soup.find(class_="listing-details").find_all("li")]
 
         def _find_detail_value(detail_name: str) -> str:
             return next(
-                (detail["proparty_value"] for detail in details_collector if
+                (detail["proparty_value"] for detail in found_details if
                  detail["proparty_name"] == detail_name),
                 "")
 
+        def _to_number(numeric_string: str) -> float:
+            return float(re.sub(r'[^0-9.]', '', numeric_string))
+
         description = soup.find(attrs={"itemprop": "description"})
         return IPhoneListingDetails(
-            price=soup.find(attrs={"class": "listing-price"}).text,
+            price=_to_number(soup.find(attrs={"class": "listing-price"}).text),
             description=description.text if description else '',
             model=_find_detail_value("Mudel"),
             memory=_find_detail_value("Maht"),
