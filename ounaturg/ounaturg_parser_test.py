@@ -1,17 +1,20 @@
 import unittest
 
-from ounaturg.ounaturg_parser import IPhoneModel, OunaturgParser
+from ounaturg.ounaturg_parser import IPhoneModel, OunaturgParser, IPadModel
 
 
 class OunaturgParserTest(unittest.TestCase):
     parser = OunaturgParser()
     parser._page_threshold = 2
 
+    def test_find_ipad_prices(self) -> None:
+        self.assertTrue(self.parser.find_ipad_prices(IPadModel.IPAD_PRO))
+
     def test_find_iphone_prices(self) -> None:
         self.assertTrue(self.parser.find_iphone_prices(IPhoneModel.IPHONE_13_PRO))
 
     def test_get_links_to_offering_details(self) -> None:
-        found_links = self.parser._get_urls_to_offering_details(1)
+        found_links = self.parser._get_urls_to_offering_details(1, 'https://www.ounaturg.ee/iphone')
         self.assertTrue(found_links)
         for link in found_links:
             self.assertIn('https://www.ounaturg.ee', link)

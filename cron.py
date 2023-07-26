@@ -19,3 +19,6 @@ def setup_cron(app: Flask) -> None:
     scheduler.start()
     scheduler.add_job(id='send_iphone_prices', func=mailer.send_iphone_prices, trigger='cron', hour=8,
                       timezone=timezone('Europe/Helsinki'))
+
+    scheduler.add_job(id='send_ipad_prices', func=mailer.send_ipad_prices(), trigger='cron', hour=9,
+                      timezone=timezone('Europe/Helsinki'))

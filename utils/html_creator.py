@@ -1,7 +1,7 @@
 class HtmlCreator:
     @staticmethod
     def create_html_table(rows_elements: list[dict]) -> str:
-        table_style = """
+        table_style: str = """
         <style type="text/css">
         table {
             border-collapse: collapse;
@@ -18,9 +18,9 @@ class HtmlCreator:
         </style>
         """
 
-        table_headers = "".join(f"<th>{key.capitalize()}</th>" for key in rows_elements[0].keys())
+        table_headers: str = "".join(f"<th>{key.capitalize()}</th>" for key in rows_elements[0].keys())
 
-        table_rows = "".join(
+        table_rows: str = "".join(
             f"<tr>{''.join(f'<td>{value}</td>' for value in row.values())}</tr>"
             for row in rows_elements)
 
