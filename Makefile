@@ -1,4 +1,4 @@
-.PHONY: install test typecheck lint docker all
+.PHONY: install test typecheck lint docker all logs help, logs-follow
 
 all: install test typecheck lint docker
 
@@ -11,7 +11,9 @@ help:
 	@echo "typecheck: Typecheck Python files with mypy."
 	@echo "lint: Lint Python files with flake8."
 	@echo "docker: Stop, remove, build, and start docker services."
-	@echo "all: Run all commands."
+	@echo "logs: Show docker logs."
+	@echo "logs-follow: Show docker logs and follow."
+	@echo "all: Run install, test, typecheck, lint and docker."
 
 install:
 	pip install -r requirements.txt
@@ -29,3 +31,10 @@ lint:
 
 docker:
 	docker-compose stop && docker-compose rm -f && docker-compose build && docker-compose up -d
+
+logs:
+	docker-compose logs
+
+logs-follow:
+	docker-compose logs --follow
+
