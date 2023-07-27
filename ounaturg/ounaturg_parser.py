@@ -2,7 +2,7 @@ import logging
 import re
 from enum import Enum
 from itertools import chain, takewhile, count
-from typing import NamedTuple
+from typing import NamedTuple, Union
 
 import requests
 from bs4 import BeautifulSoup, Tag
@@ -73,7 +73,7 @@ class OunaturgParser:
     def _find_ipad_details_urls_by_paginating(self, model: IPadModel) -> list[str]:
         return self._find_details_urls_by_paginating(model, self.__ipad_search_url)
 
-    def _find_details_urls_by_paginating(self, model: IPadModel | IPhoneModel, url: str) -> list[str]:
+    def _find_details_urls_by_paginating(self, model: Union[IPadModel, IPhoneModel], url: str) -> list[str]:
         return list(filter(lambda found_url: found_url.endswith(model.value),
                            list(chain.from_iterable(
                                takewhile(bool,
