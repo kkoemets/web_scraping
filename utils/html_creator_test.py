@@ -16,7 +16,8 @@ class HtmlCreatorTest(unittest.TestCase):
                 color='color',
                 condition='condition',
                 location='location',
-                href='href'),
+                href='href',
+                listing_age='listing_age'),
             dict(
                 price=1100.0,
                 description='description',
@@ -25,7 +26,8 @@ class HtmlCreatorTest(unittest.TestCase):
                 color='color',
                 condition='condition',
                 location='location',
-                href='href')]),
+                href='href',
+                listing_age='listing_age')]),
             """
         
         <style type="text/css">
@@ -46,10 +48,10 @@ class HtmlCreatorTest(unittest.TestCase):
         <table>
           <thead>
             <tr>
-              <th>Price</th><th>Description</th><th>Model</th><th>Memory</th><th>Color</th><th>Condition</th><th>Location</th><th>Href</th>
+              <th>Price</th><th>Description</th><th>Model</th><th>Memory</th><th>Color</th><th>Condition</th><th>Location</th><th>Href</th><th>Listing_age</th>
             </tr>
           </thead>
           <tbody>
-            <tr><td>1000.0</td><td>description</td><td>model</td><td>memory</td><td>color</td><td>condition</td><td>location</td><td>href</td></tr><tr><td>1100.0</td><td>description</td><td>model</td><td>memory</td><td>color</td><td>condition</td><td>location</td><td>href</td></tr>
+            <tr><td>1000.0</td><td>description</td><td>model</td><td>memory</td><td>color</td><td>condition</td><td>location</td><td>href</td><td>listing_age</td></tr><tr><td>1100.0</td><td>description</td><td>model</td><td>memory</td><td>color</td><td>condition</td><td>location</td><td>href</td><td>listing_age</td></tr>
           </tbody>
         </table>""")

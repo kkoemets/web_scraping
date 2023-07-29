@@ -29,6 +29,7 @@ class OunaturgParserTest(unittest.TestCase):
         self.assertTrue(listing.condition)
         self.assertTrue(listing.location)
         self.assertTrue(listing.href)
+        self.assertTrue(listing.listing_age)
 
 
 if __name__ == '__main__':

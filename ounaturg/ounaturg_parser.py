@@ -31,6 +31,7 @@ class ListingDetails(NamedTuple):
     condition: str
     location: str
     href: str
+    listing_age: str
 
 
 class IPhoneListingDetails(ListingDetails):
@@ -120,6 +121,7 @@ class OunaturgParser:
 
         description = soup.find(attrs={"itemprop": "description"})
         price = soup.find(attrs={"class": "listing-price"})
+        listing_age = soup.find(attrs={"class": "listing-time-notice"})
         return ListingDetails(
             price=_to_number(price.text) if price else -1.0,
             description=description.text if description else '',
@@ -128,7 +130,8 @@ class OunaturgParser:
             color=_find_detail_value("Värv"),
             condition=_find_detail_value("Seisukord"),
             location=_find_detail_value("Asukoht"),
-            href=url)
+            href=url,
+            listing_age=listing_age.text if listing_age else '')
 
     @staticmethod
     def _get_html(url: str) -> bytes:
