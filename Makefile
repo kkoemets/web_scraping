@@ -1,4 +1,4 @@
-.PHONY: install test typecheck lint docker all logs help, logs-follow
+.PHONY: install test typecheck lint docker all logs help logs-follow
 
 all: install test typecheck lint docker
 
